@@ -48,8 +48,8 @@ public class CommentController {
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public Page<CommentOutput> searchComments(@PageableDefault Pageable pageable) {
-    Page<CommentOutput> comment = commentService.findComments(pageable);
-    if (comment == null) {
+    Page<CommentOutput> comment = commentService.searchComment(pageable);
+    if (comment.getTotalElements() == 0) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
     return comment;

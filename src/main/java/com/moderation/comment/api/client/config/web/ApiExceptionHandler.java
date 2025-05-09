@@ -1,6 +1,8 @@
 package com.moderation.comment.api.client.config.web;
 
 import com.moderation.comment.api.client.exception.CommentClientBadGatewayException;
+import com.moderation.comment.domain.service.exception.CommentNotFoundException;
+import com.moderation.comment.domain.service.exception.ModerationServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,6 +37,24 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     problemDetail.setTitle("Bad Gateway");
     problemDetail.setDetail(e.getMessage());
     problemDetail.setType(URI.create("/errors/bad-gateway"));
+    return problemDetail;
+  }
+
+  @ExceptionHandler({ModerationServiceException.class})
+  public ProblemDetail handle(ModerationServiceException e) {
+    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+    problemDetail.setTitle("Unprocessable Entity");
+    problemDetail.setDetail(e.getMessage());
+    problemDetail.setType(URI.create("/errors/unprocessable-entity"));
+    return problemDetail;
+  }
+
+  @ExceptionHandler({CommentNotFoundException.class})
+  public ProblemDetail handle(CommentNotFoundException e) {
+    ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+    problemDetail.setTitle("Not Found");
+    problemDetail.setDetail(e.getMessage());
+    problemDetail.setType(URI.create("/errors/not-found"));
     return problemDetail;
   }
 

@@ -9,6 +9,8 @@ import com.moderation.comment.api.model.ModerationOutput;
 import com.moderation.comment.common.IdGenerator;
 import com.moderation.comment.domain.model.Comment;
 import com.moderation.comment.domain.repository.CommentRepository;
+import com.moderation.comment.domain.service.exception.CommentNotFoundException;
+import com.moderation.comment.domain.service.exception.ModerationServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -50,7 +52,7 @@ public class CommentService {
       log.info("Successfully created comment with id {}.", comment.getId());
     } else {
       log.info("Failure to create comment.");
-      throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new ModerationServiceException("Failure to create comment.");
     }
     return convertToModel(comment);
   }
@@ -62,10 +64,10 @@ public class CommentService {
     return convertToModel(comment);
   }
 
-  public Page<CommentOutput> findComments(Pageable pageable) {
+  public Page<CommentOutput> searchComment(Pageable pageable) {
     Page<Comment> comments = repository.findAll(pageable);
     if (comments.getTotalElements() == 0) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+      throw new CommentNotFoundException("Comments not found.");
     }
     return comments.map(this::convertToModel);
   }
